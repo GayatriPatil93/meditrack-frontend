@@ -1,53 +1,35 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import api from '../services/api';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { loginUser } from '../services/auth'
 import './Login.css'
 
 function Login() {
-    const navigate = useNavigate();
+  const navigate = useNavigate()
 
-    const [ formdata, setFormdata ] = useState({
-        email: '',
-        password: ''
-    });
+  const [formdata, setFormdata] = useState({
+    email: '',
+    password: ''
+  })
 
+  const handleChange = (event) => {
+    setFormdata({
+      ...formdata,
+      [event.target.name]: event.target.value
+    })
+  }
 
-    const handleChange = (event) => {
-        setFormdata({
-            ...formdata,
+  const handleSubmit = async (event) => {
+    event.preventDefault()
 
-            [event.target.name]: event.target.value
-        });
-    };
-
-    const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    try{
-
-        const response = await api.post(
-            "/users/login",
-
-            formdata
-        );
-         localStorage.setItem(
-
-                "token",
-
-                response.data.token
-            );
-
-            alert("Login Successful");
-
-            navigate("/dashboard");
-
-        } catch (error) {
-
-            console.log(error);
-
-            alert("Invalid Credentials");
-        }
-    };
+    try {
+      await loginUser(formdata)
+      alert('Login successful')
+      navigate('/dashboard')
+    } catch (error) {
+      console.error(error)
+      alert('Invalid credentials or server error')
+    }
+  }
 
   return (
     <main className="login-page">
@@ -64,7 +46,7 @@ function Login() {
             id="email"
             type="email"
             name="email"
-            placeholder="you@healthcare.com"
+            placeholder="you@gmail.com"
             value={formdata.email}
             onChange={handleChange}
             autoComplete="email"
